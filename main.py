@@ -9,6 +9,7 @@ def Γ(x):
 δ = lambda x: Δ(x, Γ(type(x))) # x or default value of type of x (if it exists)
 
 class __λ__:
+    "Smaller lambda creation"
     def __init__(self, _ = ()):
         self._ = δ(_)
         self.code = None
@@ -24,6 +25,8 @@ class __λ__:
         return self
 
 class __Φ__:
+    "Magic functions, consumes many operations into it's chain"
+    
     FUNCS = "abs add repr aenter aexit aiter and anext await bool bytes ceil class_getitem cmp coerce complex contains delitem delslice dir div divmod enter eq exit float floor floordiv format fspath ge get getitem getnewargs getslice gt hash hex iadd iand idiv ifloordiv ilshift imatmul imod import imul index init_subclass instancecheck int invert ior ipow irshift isub iter itruediv ixor le len length_hint long lshift lt matmul metaclass missing mod mul ne neg next nonzero oct or pos pow prepare radd rand rcmp rdiv rdivmod reduce reduce_ex reversed rfloordiv rlshift rmatmul rmod rmul ror round rpow rrshift rshift rsub rtruediv rxor set set_name setitem setslice sizeof slots str sub subclasscheck subclasses truediv trunc unicode weakref xor".split()
     RESERVED = "repr str bool".split() # More needs to be added to this 100%
     
@@ -38,6 +41,7 @@ class __Φ__:
     def __getattribute__(self, name):
         return super(__Φ__, self).__getattribute__(name)
 
+# Initalizing overwrites for magic function 
 for i in __Φ__.FUNCS:
     func_name = f'__{i}__'
     alias = f'_{i}_' if i in __Φ__.RESERVED else func_name
@@ -47,9 +51,12 @@ for i in __Φ__.FUNCS:
         )
     )
 
-class __Ψ__: pass
+class __Ψ__:
+    "Replacement character for χ"
+    pass
 
 class __χ__:
+    "Method chaining"
     class o:
         def __init__(self, *args):
             self.args = args
@@ -85,6 +92,7 @@ class __χ__:
                     
         return __χ__(_ = self._.copy() + [self.o(args, kwargs)])
 
+# Create base instances
 Φ = __Φ__()
 λ = __λ__()
 χ = __χ__()
