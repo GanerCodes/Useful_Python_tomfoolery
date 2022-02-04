@@ -90,8 +90,9 @@ class __χ__:
 χ = __χ__()
 Ψ = __Ψ__()
 
-χ.range(10).reversed.map(Φ ** 2, Ψ).list.print()()
 print((Φ * 10)(2))
+print()
+χ.range(10).reversed.map(Φ ** 2, Ψ).list.reduce(λ.x.y("x - y"), Ψ).print()() # prints -123
 print()
 print(λ.x.y("x**y")(2, 5))
 print(λ.a.b.c("str(a) + str(b) + str(c) * 15")(2, 3, 4))
