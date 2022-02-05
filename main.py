@@ -7,11 +7,11 @@ lazy_load = lambda i, s: exec(f"""def {s}(*args, **kwargs):
 lazy_load("numpy", "arange")
 lazy_load("functools", "reduce")
 
-def __Γ__(x):
+def __Γ__(x, alt = None):
     try:
         return x()
     except Exception:
-        return None
+        return alt
 
 def __Σ__(f, a = 0, b = 1, samples = 1000):
     return (s := 1 / samples) and sum(map(λ.x("s*f(x)", f=f, s=s), 𝛢(a, b, s * abs(b - a))
@@ -39,6 +39,16 @@ class __Φ__:
     FUNCS = "abs add repr aenter aexit aiter and anext await bool bytes ceil class_getitem cmp coerce complex contains delitem delslice dir div divmod enter eq exit float floor floordiv format fspath ge get getitem getnewargs getslice gt hash hex iadd iand idiv ifloordiv ilshift imatmul imod import imul index init_subclass instancecheck int invert ior ipow irshift isub iter itruediv ixor le len length_hint long lshift lt matmul metaclass missing mod mul ne neg next nonzero oct or pos pow prepare radd rand rcmp rdiv rdivmod reduce reduce_ex reversed rfloordiv rlshift rmatmul rmod rmul ror round rpow rrshift rshift rsub rtruediv rxor set set_name setitem setslice sizeof slots str sub subclasscheck subclasses truediv trunc unicode weakref xor".split()
     RESERVED = "repr str bool".split() # More needs to be added to this 100%
     
+    def once_init():
+        for i in __Φ__.FUNCS:
+            func_name = f'__{i}__'
+            alias = f'_{i}_' if i in __Φ__.RESERVED else func_name
+            setattr(__Φ__, alias,
+                lambda *x, f = func_name: (
+                    __Φ__(x[0].operations.copy() + [(f, x[1:])])
+                )
+            )
+    
     def __init__(self, operations = None):
         self.operations = operations or []
     
@@ -51,21 +61,29 @@ class __Φ__:
         return super(__Φ__, self).__getattribute__(name)
 
 # Initalizing overwrites for magic function 
-for i in __Φ__.FUNCS:
-    func_name = f'__{i}__'
-    alias = f'_{i}_' if i in __Φ__.RESERVED else func_name
-    setattr(__Φ__, alias,
-        lambda *x, f = func_name: (
-            __Φ__(x[0].operations.copy() + [(f, x[1:])])
-        )
-    )
+__Φ__.once_init()
 
 class __Ψ__:
     "Replacement character for χ"
     def __init__(self, func = None):
         self.func = func
-    def __call__(self, func = None):
+    def __call__(self, func = None): # TODO β
         return __Ψ__(func)
+
+class __ρ__:
+    def __init__(self, key = None, func = None):
+        self.key = key
+        self.func = func
+    
+    def __getitem__(self, key):
+        return __ρ__(key = key, func = self.func)
+    def __call__(self, func = None): # TODO β
+        return __ρ__(key = self.key, func = func)
+class __φ__(__ρ__):
+    def __getitem__(self, key):
+        return __φ__(key = key, func = self.func)
+    def __call__(self, func = None):
+        return __φ__(key = self.key, func = func)
 
 class __χ__:
     "Method chaining"
@@ -73,8 +91,18 @@ class __χ__:
         def __init__(self, *args):
             self.args = args
     
-    def Ψ_run(Ψ, val):
-        return Ψ.func(val) if Ψ.func else val
+    def run_callable(Ψ, final):
+        return Ψ.func(final) if Ψ.func is not None else final
+    
+    def Ψ_run(Ψ, final, args, kwargs):
+        match type(Ψ).__name__:
+            case "__Ψ__":
+                return Ψ.func(final) if Ψ.func else final
+            case ("__ρ__" | "__φ__") as t:
+                ctx = args if t == "__ρ__" else kwargs
+                return __χ__.run_callable(Ψ, ctx[Ψ.key]) if Ψ.key is not None else ctx
+            case _:
+                return Ψ
     
     def __init__(self, *args, _ = None, **kwargs):
         if not hasattr(self, '_'):
@@ -94,51 +122,108 @@ class __χ__:
                 return __χ__(_ = self._[:-1].copy() + [self.o(args[0])])
                 
             if len(self._[-1].args) == 2:
-                stack = [self._[0]]
-                for i in range(len(self._))[1:]:
-                    v = self._[i]
+                stack = [next(itter := enumerate(self._))[1]]
+                for i, v in itter:
                     if len(v.args) == 1 == len(self._[i - 1].args):
                         stack.append(self.o((), {}))
                     stack.append(v)
                 
-                final = None
+                final = args[0] if args else None
                 while len(stack):
                     func, (ia, ika) = stack.pop(0).args[0], stack.pop(0).args
                     
-                    final = func(
-                        *[(__χ__.Ψ_run(i, final) if type(i) == __Ψ__ else i) for i in ia],
-                        **{k: (__χ__.Ψ_run(i, final) if type(v) == __Ψ__ else v) for k, v in ika.items()}
-                    ) if (ia or ika) else func(final)
+                    dat = (
+                        [   __χ__.Ψ_run(i, final, args, kwargs) for i in ia],
+                        {k: __χ__.Ψ_run(i, final, args, kwargs) for k, i in ika.items()}
+                    ) if ia or ika else ([final], {})
+                    
+                    final = eval("func(*dat[0], **dat[1])", globals(), locals())
                 
                 return final
         else:
             return __χ__(_ = [self.o(lambda x: x), self.o(args, kwargs)])
-                    
         return __χ__(_ = self._.copy() + [self.o(args, kwargs)])
 
+# ΔΓδΑΣΦλβζχƒΨ
+
 Δ = lambda a, b = None: a if a else b
-δ = lambda x: Δ(x, __Γ__(type(x))) # x or default value of type of x (if it exists)
-𝛢 = lambda a = 0, b = 10, step = 1: arange(a, b + step, step)
+# Δ(0) = None
+# Δ(0, "hi") = "hi"
+# Δ(1, "hi") = 1
+
 Γ = __Γ__
-Φ = __Φ__()
-λ = __λ__()
-χ = __χ__()
-Ψ = __Ψ__()
-β = λ.x
-ζ = λ.x.y
+# Γ(error producing code) = None
+# Γ(error producing code, "hi") = "hi"
+# Γ(lambda: 5) = 5
+
+δ = lambda x: Δ(x, __Γ__(type(x)))
+# (mostly applicable for arbitrary types that may have false boolean states that you want the "default" state of)
+# (Returns None if default constructor results in error)
+# δ(1) = 1
+# δ([]) = []
+
+𝛢 = lambda a = 0, b = 10, step = 1: arange(a, b + step, step)
+# Same as arange but includes final step
+
 Σ = __Σ__
+# Usage: Σ(func, a = start, b = stop, samples = amount)
+# Integral approximator
 
-print(list(( map(λ.x('χ(x).ƒ(Φ ** 3 + 7).str()()'), range(5)) )))
+Φ = __Φ__()
+# Magic variable, inspired by magic ƒ
+# Basically, most opperations performed on it returns a new instance with that operation in the chain
+# When called, it chains past operations onto a variable
+# Because TypeErrors, some operations need to be called using the magic method with 1 _ removed from each end
+# Φ + 5 = lambda x: x + 5
+# (Φ ** 5) + 2 = lambda x: (x ** 5) + 2
+# Φ.str() = lambda x: x.__str__() = str
 
-χ.range(5).map((Φ ** 3 + 7)._str_(), Ψ(β('x[::-1]'))).ƒ(''.join).print()()
+λ = __λ__()
+# Magic lambda, allows shorter lambda creation
+# Keyword arguments are treated as variables when evaluated
+# λ.x("x + 2") = lambda x: x + 2
+# λ.a.b("a ** b + 5") = lambda a, b: a ** b + 5
+# λ.a("a + f", f = 5) = lambda a: eval("a + f", {'f': 5})
 
+β = λ.x
+# Shortcut for λ.x
+ 
+ζ = λ.x.y
+# Shortcut for λ.x.y
+
+χ = __χ__()
+# Used to create composite methods in a more linear fashion
+# If arguments are not provided after a function it provides blank ones
+# Note: using ƒ allows you to pass in a function rather than naming it
+# χ.range(5) = lambda: range(5)
+# χ.range(5).list.print() = lambda: print(list(range(5)))
+# χ.range(5).ƒ(sum).print() = lambda: print(list(range(5)))
+
+Ψ = __Ψ__()
+# Serves as a replacement argument for χ, and can hold a transformation of the previous output
+# χ.range(5).map(str, Ψ) = lambda: map(str, range(5))
+# χ.range(5).map(str, Ψ).ƒ(''.join).print() = lambda: print(''.join(map(str, range(5))))
+
+ρ = __ρ__()
+φ = __φ__()
+# Similar to Ψ but to access final call arguments, can hold a transformation of the previous output
+# ρ is args and φ is kwargs
+
+
+
+
+
+print(list(( map(β('χ(x).ƒ(Φ ** 3 + 7).str()()'), range(5)) )))
+print()
+χ.range(Ψ).map((Φ ** 3 + 7)._str_(), Ψ(β('x[::-1]'))).ƒ(''.join).print()(5)
+print()
 print(χ.Σ(Φ * 2, -5, 5)())
-
+print()
 print((Φ * 10)(2))
 print()
-χ.range(10).reversed.map(Φ ** 2, Ψ).list.reduce(λ.x.y("x - y"), Ψ).print()() # prints -123
+χ.range(10).reversed.map(Φ ** 2, Ψ).list.reduce(ζ("x - y"), Ψ).print()() # prints -123
 print()
-print(λ.x.y("x**y")(2, 5))
+print(ζ("x**y + v")(2, 5, v = 5))
 print(λ.a.b.c("str(a) + str(b) + str(c) * 15")(2, 3, 4))
 print()
 print(list(map(λ.x("x * 10"), range(5))))
