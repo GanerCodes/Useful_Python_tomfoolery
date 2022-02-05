@@ -1,5 +1,3 @@
-# https://github.com/GanerCodes/Useful_Python_tomfoolery/blob/master/main.py
-
 lazy_load = lambda i, s: exec(f"""def {s}(*args, **kwargs):
     from {i} import {s}
     return {s}(*args, **kwargs)""", globals())
