@@ -7,10 +7,6 @@ lazy_load = lambda i, s: exec(f"""def {s}(*args, **kwargs):
 lazy_load("numpy", "arange")
 lazy_load("functools", "reduce")
 
-lmap  = lambda *args, **kwargs: list(map(*args, **kwargs))
-jmap  = lambda  *args, **kwargs: ''.join(map(str, map(*args, **kwargs)))
-pjmap = lambda  *args, **kwargs: print(''.join(map(str, map(*args, **kwargs))))
-
 def __Γ__(x, alt = None):
     try:
         return x()
@@ -72,7 +68,7 @@ class __Ψ__:
         self.func = func
     def proc_func(self, func):
         return β(func) if type(func) == str else func
-    def __call__(self, func = None): # TODO β
+    def __call__(self, func = None):
         return self.__class__(func = self.proc_func(func))
 
 class __ρ__(__Ψ__):
@@ -81,7 +77,7 @@ class __ρ__(__Ψ__):
         self.func = func
     def __getitem__(self, key):
         return self.__class__(key = key, func = self.func)
-    def __call__(self, func = None): # TODO β
+    def __call__(self, func = None):
         return self.__class__(key = self.key, func = self.proc_func(func))
 
 class __φ__(__ρ__):
@@ -146,6 +142,19 @@ class __χ__:
             return __χ__(_ = [self.o(lambda x: x), self.o(args, kwargs)])
         return __χ__(_ = self._.copy() + [self.o(args, kwargs)])
 
+lmap  = lambda *args, **kwargs: list(map(*args, **kwargs))
+jmap  = lambda  *args, **kwargs: ''.join(map(str, map(*args, **kwargs)))
+pjmap = lambda  *args, **kwargs: print(''.join(map(str, map(*args, **kwargs))))
+# These are just just for convenient 
+
+𝛢 = lambda a = 0, b = 10, step = 1: arange(a, b + step, step)
+# Same as arange but includes final step
+
+Σ = __Σ__
+# Usage: Σ(func, a = start, b = stop, samples = amount)
+# Integral approximator
+# χ.Σ(Φ * 2, -5, 5)() # ~zero
+
 Δ = lambda a, b = None: a if a else b
 # Δ(0) # None
 # Δ(0, "hi") # "hi"
@@ -162,13 +171,6 @@ class __χ__:
 # δ(1) # 1
 # δ([]) # []
 
-𝛢 = lambda a = 0, b = 10, step = 1: arange(a, b + step, step)
-# Same as arange but includes final step
-
-Σ = __Σ__
-# Usage: Σ(func, a = start, b = stop, samples = amount)
-# Integral approximator
-
 Φ = __Φ__()
 # Magic variable, inspired by magic ƒ
 # Basically, most opperations performed on it returns a new instance with that operation in the chain
@@ -181,6 +183,7 @@ class __χ__:
 λ = __λ__()
 # Magic lambda, allows shorter lambda creation
 # Keyword arguments are treated as variables when evaluated
+# Missing arguments default to None
 # λ.x("x + 2") # lambda x: x + 2
 # λ.a.b("a ** b + 5") # lambda a, b: a ** b + 5
 # λ.a("a + f", f = 5) # lambda a: eval("a + f", {'f': 5})
@@ -188,8 +191,8 @@ class __χ__:
 β = λ.x
 # Shortcut for λ.x
  
-ζ = λ.x.y
-# Shortcut for λ.x.y
+ζ = λ.x.y.z.w
+# Shortcut for λ with up to 4 arguments, x y z & w
 
 χ = __χ__()
 # Used to create composite methods in a more linear fashion
@@ -210,18 +213,17 @@ class __χ__:
 # Similar to Ψ but to access final call arguments for χ, can hold a transformation of the previous output
 # ρ for args and φ for kwargs
 # χ.range(φ['k'])(k = 3) = range(3)
-# χ.range(ρ[0](Φ - 3))(5) = range(2)
+# χ.range(ρ[0]('x - 3'))(5) = range(2)
 
 # Random examples I've thrown together, try and guess what they will do before running to practice
 print('e' * χ.range(φ['k']('x * 10')).len()(k = 3))
-print(χ.Σ(Φ * 2, -5, 5)())
 print((Φ * 10)(2))
 print(ζ("x**y + v")(2, 5, v = 5))
-print(λ.a.b.c("str(a) + str(b) + str(c) * 15")(2, 3, 4))
-pjmap(β('χ(x).ƒ(Φ ** 3 + 7).str()()'), range(5))
+print(λ.a.b.c("str(a) + str(b) + str(c) + x * 15")(2, 3, 4, x = "xd"))
+pjmap(χ(ρ[0]).ƒ(Φ ** 3 + 7).str(), range(5))
 pjmap(Φ * 10, range(5))
-pjmap( Φ ** 3 + 7 , range(20))
+pjmap(Φ ** 3 + 7, range(20))
 pjmap(λ.x("x * 10"), range(5))
-pjmap( (Φ ** 2)._str_()[::-1] , range(9))
+pjmap((Φ ** 2)._str_()[::-1], range(9))
 χ.range(10).reversed.map(Φ ** 2, Ψ).list.reduce(ζ("x - y"), Ψ).print()()
-χ.range(Ψ).map((Φ ** 3 + 7)._str_(), Ψ(β('x[::-1]'))).ƒ(''.join).print()(5)
+χ(5).range(Ψ).map((Φ ** 3 + 7)._str_(), Ψ('x[::-1]')).ƒ(''.join).print()(5)
