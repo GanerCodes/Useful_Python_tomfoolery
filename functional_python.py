@@ -85,7 +85,6 @@ class __φ__(__ρ__):
     pass
 
 class __χ__:
-    "Method chaining"
     class o:
         def __init__(self, *args):
             self.args = args
@@ -118,7 +117,9 @@ class __χ__:
     def __call__(self, *args, **kwargs):
         if len(self._):
             if len(self._[-1].args) == 0:
-                return __χ__(_ = self._[:-1].copy() + [self.o(args[0])])
+                return __χ__(_ = self._[:-1].copy() + [
+                    self.o(ζ(args[0]) if type(args[0]) == str else args[0])
+                ])
                 
             if len(self._[-1].args) == 2:
                 stack = [next(itter := enumerate(self._))[1]]
@@ -199,6 +200,7 @@ pjmap = lambda *args, **kwargs: print(jmap(*args, **kwargs))
 # Used to create composite methods in a more linear fashion
 # If arguments are not provided after a function it provides blank ones
 # Note: using ƒ allows you to pass in a function rather than naming it
+# Note: if ƒ receives a string it is automatically passed into ζ
 # χ.range(5) # lambda: range(5)
 # χ.range(5).list.print() # lambda: print(list(range(5)))
 # χ.range(5).ƒ(sum).print() # lambda: print(list(range(5)))
@@ -230,4 +232,5 @@ pjmap(Φ ** 3 + 7, range(20))
 pjmap(λ.x("x * 10"), range(5))
 pjmap((Φ ** 2)._str_()[::-1], range(9))
 χ.range(10).reversed.map(Φ ** 2, Ψ).list.reduce(ζ("x - y"), Ψ).print()()
-χ(5).range(Ψ).map((Φ ** 3 + 7)._str_(), Ψ('x[::-1]')).ƒ(''.join).print()(5)
+χ(5).ƒ('(x+y+z(hello)) // 2')(Ψ, ρ+0, φ.e, hello = φ.hi(Φ - 2)).range(Ψ('x+2')).\
+    map((Φ ** 3 + 7)._str_(), Ψ('x[::-1]')).ƒ(''.join).print()(3, e = Φ + 2, hi = 5)
