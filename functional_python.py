@@ -16,7 +16,6 @@ def __Σ__(f, a = 0, b = 1, samples = 1000):
 ))
 
 class __λ__:
-    "Smaller lambda creation"
     def __init__(self, _ = (), code = None, kwargs = None):
         self._ = δ(_)
         self.code = Δ(code)
@@ -32,8 +31,6 @@ class __λ__:
             return __λ__(self._, args[0], kwargs)
 
 class __Φ__:
-    "Magic functions, can consume many operations into it's chain"
-    
     FUNCS = "abs add repr aenter aexit aiter and anext await bool bytes ceil class_getitem cmp coerce complex contains delitem delslice dir div divmod enter eq exit float floor floordiv format fspath ge get getitem getnewargs getslice gt hash hex iadd iand idiv ifloordiv ilshift imatmul imod import imul index init_subclass instancecheck int invert ior ipow irshift isub iter itruediv ixor le len length_hint long lshift lt matmul metaclass missing mod mul ne neg next nonzero oct or pos pow prepare radd rand rcmp rdiv rdivmod reduce reduce_ex reversed rfloordiv rlshift rmatmul rmod rmul ror round rpow rrshift rshift rsub rtruediv rxor set set_name setitem setslice sizeof slots str sub subclasscheck subclasses truediv trunc unicode weakref xor".split()
     RESERVED = "repr str bool".split() # More needs to be added to this 100%
     
@@ -63,20 +60,26 @@ __Φ__.once_init()
 
 class __Ψ__:
     def __init__(self, func = None):
-        self.func = func
-    def proc_func(self, func):
+        self.__function__ = func
+    def __proc_func__(self, func):
         return β(func) if type(func) == str else func
     def __call__(self, func = None):
-        return self.__class__(func = self.proc_func(func))
+        return self.__class__(func = self.__proc_func__(func))
 
 class __ρ__(__Ψ__):
     def __init__(self, key = None, func = None):
-        self.key = key
-        self.func = func
+        self.__key__ = key
+        self.__function__ = func
     def __getitem__(self, key):
-        return self.__class__(key = key, func = self.func)
+        return self.__class__(key = key, func = self.__function__)
     def __call__(self, func = None):
-        return self.__class__(key = self.key, func = self.proc_func(func))
+        return self.__class__(key = self.__key__, func = self.__proc_func__(func))
+    def __add__(self, key):
+        return self.__getitem__(key)
+    def __sub__(self, key):
+        return self.__getitem__(-key)
+    def __getattr__(self, name):
+        return self.__getitem__(name)
 
 class __φ__(__ρ__):
     pass
@@ -88,15 +91,15 @@ class __χ__:
             self.args = args
     
     def run_callable(Ψ, final):
-        return Ψ.func(final) if Ψ.func is not None else final
+        return Ψ.__function__(final) if Ψ.__function__ is not None else final
     
     def Ψ_run(Ψ, final, args, kwargs):
         match type(Ψ).__name__:
             case "__Ψ__":
-                return Ψ.func(final) if Ψ.func else final
+                return Ψ.__function__(final) if Ψ.__function__ else final
             case ("__ρ__" | "__φ__") as t:
                 ctx = args if t == "__ρ__" else kwargs
-                return __χ__.run_callable(Ψ, ctx[Ψ.key]) if Ψ.key is not None else ctx
+                return __χ__.run_callable(Ψ, ctx[Ψ.__key__]) if Ψ.__key__ is not None else ctx
             case _:
                 return Ψ
     
@@ -141,9 +144,9 @@ class __χ__:
         return __χ__(_ = self._.copy() + [self.o(args, kwargs)])
 
 lmap  = lambda *args, **kwargs: list(map(*args, **kwargs))
-jmap  = lambda  *args, **kwargs: ''.join(map(str, map(*args, **kwargs)))
-pjmap = lambda  *args, **kwargs: print(''.join(map(str, map(*args, **kwargs))))
-# These are just just for convenient 
+jmap  = lambda *args, **kwargs: ''.join(map(str, map(*args, **kwargs)))
+pjmap = lambda *args, **kwargs: print(jmap(*args, **kwargs))
+# These are just just for convenient
 
 𝛢 = lambda a = 0, b = 10, step = 1: arange(a, b + step, step)
 # Same as arange but includes final step
@@ -210,8 +213,11 @@ pjmap = lambda  *args, **kwargs: print(''.join(map(str, map(*args, **kwargs))))
 φ = __φ__()
 # Similar to Ψ but to access final call arguments for χ, can hold a transformation of the previous output
 # ρ for args and φ for kwargs
+# The add, sub, and attribute methods on ρ and φ are overloaded for simpler argument access
 # χ.range(φ['k'])(k = 3) = range(3)
 # χ.range(ρ[0]('x - 3'))(5) = range(2)
+# χ.print(φ.k)(k = "hello") # prints "hello"
+# χ.print(ρ+0)("hello") # prints "hello"
 
 # Random examples I've thrown together, try and guess what they will do before running to practice
 print('e' * χ.range(φ['k']('x * 10')).len()(k = 3))
