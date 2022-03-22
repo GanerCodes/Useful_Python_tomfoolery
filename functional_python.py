@@ -12,23 +12,25 @@ def __Γ__(x, alt = None):
         return alt
 
 def __Σ__(f, a = 0, b = 1, samples = 1000):
-    return (s := 1 / samples) and sum(map(λ.x("s*f(x)", f=f, s=s), 𝛢(a, b, s * abs(b - a))
+    return (s := 1 / samples) and sum(map(λ.x("s*f(x)", f=f, s=s), iarange(a, b, s * abs(b - a))
 ))
 
 class __λ__:
     def __init__(self, _ = (), code = None, kwargs = None):
         self._ = δ(_)
-        self.code = Δ(code)
+        self.__code__ = Δ(code)
         self.kwargs = Δ(kwargs, {})
     def __getattr__(self, name):
+        if name in ('xonsh_display', '__signature__', '__wrapped__'):
+            raise AttributeError()
         return __λ__(self._ + (name, ))
     def __call__(self, *args, **kwargs):
-        if self.code:
-            return eval(self.code, globals() | kwargs | self.kwargs | {
+        if self.__code__:
+            return eval(self.__code__, globals() | kwargs | self.kwargs | {
                 self._[i]: v for i, v in enumerate(args)
             }, locals())
         else:
-            return __λ__(self._, args[0], kwargs)
+             return __λ__(self._, args[0], kwargs)
 
 class __Φ__:
     FUNCS = "abs add repr aenter aexit aiter and anext await bool bytes ceil class_getitem cmp coerce complex contains delitem delslice dir div divmod enter eq exit float floor floordiv format fspath ge get getitem getnewargs getslice gt hash hex iadd iand idiv ifloordiv ilshift imatmul imod import imul index init_subclass instancecheck int invert ior ipow irshift isub iter itruediv ixor le len length_hint long lshift lt matmul metaclass missing mod mul ne neg next nonzero oct or pos pow prepare radd rand rcmp rdiv rdivmod reduce reduce_ex reversed rfloordiv rlshift rmatmul rmod rmul ror round rpow rrshift rshift rsub rtruediv rxor set set_name setitem setslice sizeof slots str sub subclasscheck subclasses truediv trunc unicode weakref xor".split()
@@ -107,6 +109,8 @@ class __χ__:
             self._ = Δ(_, [])
         
     def __getattribute__(self, name):
+        if name == 'xonsh_display':
+            raise AttributeError()
         if name[0] in '_o':
             return super(__χ__, self).__getattribute__(name)
         elif name[0] == 'ƒ':
@@ -149,7 +153,7 @@ jmap  = lambda *args, **kwargs: ''.join(map(str, map(*args, **kwargs)))
 pjmap = lambda *args, **kwargs: print(jmap(*args, **kwargs))
 # These are just just for convenient
 
-𝛢 = lambda a = 0, b = 10, step = 1: arange(a, b + step, step)
+iarange = lambda a = 0, b = 10, step = 1: arange(a, b + step, step)
 # Same as arange but includes final step
 
 Σ = __Σ__
@@ -220,17 +224,19 @@ pjmap = lambda *args, **kwargs: print(jmap(*args, **kwargs))
 # χ.range(ρ[0]('x - 3'))(5) = range(2)
 # χ.print(φ.k)(k = "hello") # prints "hello"
 # χ.print(ρ+0)("hello") # prints "hello"
+__all__ = list("λζχΣΔΓδΦβΨρφ") + ["iarange"]
 
-# Random examples I've thrown together, try and guess what they will do before running to practice
-print('e' * χ.range(φ['k']('x * 10')).len()(k = 3))
-print((Φ * 10)(2))
-print(ζ("x**y + v")(2, 5, v = 5))
-print(λ.a.b.c("str(a) + str(b) + str(c) + x * 15")(2, 3, 4, x = "xd"))
-pjmap(χ(ρ[0]).ƒ(Φ ** 3 + 7).str(), range(5))
-pjmap(Φ * 10, range(5))
-pjmap(Φ ** 3 + 7, range(20))
-pjmap(λ.x("x * 10"), range(5))
-pjmap((Φ ** 2)._str_()[::-1], range(9))
-χ.range(10).reversed.map(Φ ** 2, Ψ).list.reduce(ζ("x - y"), Ψ).print()()
-χ(5).ƒ('(x+y+z(hello)) // 2')(Ψ, ρ+0, φ.e, hello = φ.hi(Φ - 2)).range(Ψ('x+2')).\
-    map((Φ ** 3 + 7)._str_(), Ψ('x[::-1]')).ƒ(''.join).print()(3, e = Φ + 2, hi = 5)
+if __name__ == '__main__':
+    # Random examples I've thrown together, try and guess what they will do before running to practice
+    print('e' * χ.range(φ['k']('x * 10')).len()(k = 3))
+    print((Φ * 10)(2))
+    print(ζ("x**y + v")(2, 5, v = 5))
+    print(λ.a.b.c("str(a) + str(b) + str(c) + x * 15")(2, 3, 4, x = "xd"))
+    pjmap(χ(ρ[0]).ƒ(Φ ** 3 + 7).str(), range(5))
+    pjmap(Φ * 10, range(5))
+    pjmap(Φ ** 3 + 7, range(20))
+    pjmap(λ.x("x * 10"), range(5))
+    pjmap((Φ ** 2)._str_()[::-1], range(9))
+    χ.range(10).reversed.map(Φ ** 2, Ψ).list.reduce(ζ("x - y"), Ψ).print()()
+    χ(5).ƒ('(x+y+z(hello)) // 2')(Ψ, ρ+0, φ.e, hello = φ.hi(Φ - 2)).range(Ψ('x+2')).\
+        map((Φ ** 3 + 7)._str_(), Ψ('x[::-1]')).ƒ(''.join).print()(3, e = Φ + 2, hi = 5)
