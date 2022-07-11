@@ -266,7 +266,7 @@ def ts_toks(tokens):
             case 'SB':
                 r += ts_toks(c)
             case 'SH':
-                r += 'for %s in range(%s)' % (ts_toks(c[2].children[0]), ts_toks(c[4]))
+                r += 'for %s in range(%s+1)' % (ts_toks(c[2].children[0]), ts_toks(c[4]))
             case 'SR':
                 r += '%s((%s) %s)' % (c[0].children[0].match.group(1), ts_toks(c[1]), ts_toks(c[0]))
     return r
